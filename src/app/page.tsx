@@ -2,7 +2,7 @@ import { VideoPost } from "@/components/VideoPost";
 
 export default function Home() {
   // This is a placeholder. We'll fetch real data from Supabase later.
-  const posts = [
+  const posts: Array<{ id: number; title: string; description: string }> = [
     { id: 1, title: "First Video", description: "This is the first video" },
     { id: 2, title: "Second Video", description: "This is the second video" },
   ];

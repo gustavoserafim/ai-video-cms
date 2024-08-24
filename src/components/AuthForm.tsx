@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 
 interface AuthFormProps {
   mode: 'login' | 'signup';
@@ -8,7 +8,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Implement authentication logic here
     console.log('Authenticating:', email, password);

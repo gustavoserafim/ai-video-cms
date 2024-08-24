@@ -5,6 +5,8 @@ import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
+const inter = Inter({ subsets: ["latin"] });
+
 export const metadata: Metadata = {
   title: "Video CMS",
   description: "A Video Content Management System",
