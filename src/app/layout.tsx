@@ -13,6 +13,8 @@ export const metadata: Metadata = {
 };
 
 
+import { SessionProvider } from "next-auth/react"
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,19 +24,19 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <SessionProvider>
-        <header className="bg-gray-800 text-white p-4">
-          <nav className="container mx-auto flex justify-between items-center">
-            <Link href="/" className="text-xl font-bold">
-              Video CMS
-            </Link>
-            <div>
-              <NavLinks />
-            </div>
-          </nav>
-        </header>
-        <main className="container mx-auto mt-8">
-          {children}
-        </main>
+          <header className="bg-gray-800 text-white p-4">
+            <nav className="container mx-auto flex justify-between items-center">
+              <Link href="/" className="text-xl font-bold">
+                Video CMS
+              </Link>
+              <div>
+                <NavLinks />
+              </div>
+            </nav>
+          </header>
+          <main className="container mx-auto mt-8">
+            {children}
+          </main>
         </SessionProvider>
       </body>
     </html>
