@@ -2,19 +2,21 @@
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function NavLinks() {
   const { data: session, status } = useSession();
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     console.log("Session status:", status);
     console.log("Session data:", session);
   }, [session, status]);
 
   console.log("Rendering NavLinks, session:", session);
 
-  if (status === "loading") {
+  if (!isClient || status === "loading") {
     return <div>Loading...</div>;
   }
 

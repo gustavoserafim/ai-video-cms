@@ -1,11 +1,15 @@
 'use client'
 
 import { SessionProvider } from "next-auth/react"
+import { useEffect } from "react"
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  console.log("Rendering Providers");
+  useEffect(() => {
+    console.log("Providers component rendered");
+  }, []);
+
   return (
-    <SessionProvider>
+    <SessionProvider refetchInterval={0}>
       {children}
     </SessionProvider>
   );
