@@ -10,13 +10,18 @@ export default function NavLinks() {
 
   useEffect(() => {
     setIsClient(true);
-    console.log("Session status:", status);
-    console.log("Session data:", session);
+    console.log("NavLinks useEffect - Session status:", status);
+    console.log("NavLinks useEffect - Session data:", session);
   }, [session, status]);
 
-  console.log("Rendering NavLinks, session:", session);
+  console.log("NavLinks render - Session status:", status);
+  console.log("NavLinks render - Session data:", session);
 
-  if (!isClient || status === "loading") {
+  if (!isClient) {
+    return null; // Don't render anything on the server
+  }
+
+  if (status === "loading") {
     return <div>Loading...</div>;
   }
 
