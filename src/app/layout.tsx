@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import NavLinks from "@/components/NavLinks";
-import { SessionProvider } from "next-auth/react";
+import { Providers } from "@/components/Providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider>
+        <Providers>
           <header className="bg-gray-800 text-white p-4">
             <nav className="container mx-auto flex justify-between items-center">
               <Link href="/" className="text-xl font-bold">
@@ -34,7 +34,7 @@ export default function RootLayout({
           <main className="container mx-auto mt-8">
             {children}
           </main>
-        </SessionProvider>
+        </Providers>
       </body>
     </html>
   );
