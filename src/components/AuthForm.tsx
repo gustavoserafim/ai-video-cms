@@ -25,6 +25,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
           onChange={(e) => setEmail(e.target.value)}
           required
           className="w-full px-3 py-2 border rounded"
+          aria-label="Email"
         />
       </div>
       <div>
@@ -36,6 +37,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
           onChange={(e) => setPassword(e.target.value)}
           required
           className="w-full px-3 py-2 border rounded"
+          aria-label="Password"
         />
       </div>
       <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded">
