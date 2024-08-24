@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
-import { SessionProvider } from "next-auth/react";
 import NavLinks from "@/components/NavLinks";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -11,9 +10,6 @@ export const metadata: Metadata = {
   title: "Video CMS",
   description: "A Video Content Management System",
 };
-
-
-import { SessionProvider } from "next-auth/react"
 
 export default function RootLayout({
   children,
