@@ -2,6 +2,7 @@
 
 import React, { useState, FormEvent, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import toast, { Toaster } from 'react-hot-toast';
@@ -10,7 +11,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 export default function CreatePostWrapper() {
   return (
     <ErrorBoundary>
-      <CreatePost />
+      <CreatePost key="create-post" />
     </ErrorBoundary>
   );
 }
@@ -32,7 +33,7 @@ function CreatePost() {
 
   if (status === 'loading') {                                                                            
     return <div className="flex justify-center items-center h-screen">                                   
-      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>  
+      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500" aria-label="Loading..."></div>  
     </div>;                                                                                              
   }   
 
