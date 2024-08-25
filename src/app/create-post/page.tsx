@@ -7,15 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import toast, { Toaster } from 'react-hot-toast';
 
-export default function CreatePostWrapper() {
-  return (
-    <ErrorBoundary>
-      <CreatePost key="create-post" />
-    </ErrorBoundary>
-  );
-}
-
-function CreatePost() {
+export default function CreatePost() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState<File | null>(null);
@@ -220,4 +212,4 @@ focus:ring-offset-2 focus:ring-blue-500"
       </form>                                                                                            
     </div>                                                                                               
   );                                                                                                     
-}
+};
