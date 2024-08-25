@@ -7,9 +7,13 @@ import { useEffect, useState } from "react";
 export default function NavLinks() {
   const { data: session, status } = useSession();
   const [isClient, setIsClient] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setIsClient(true);
+    if (status !== "loading") {
+      setIsLoading(false);
+    }
     console.log("NavLinks useEffect - Session status:", status);
     console.log("NavLinks useEffect - Session data:", session);
   }, [session, status]);
@@ -17,11 +21,7 @@ export default function NavLinks() {
   console.log("NavLinks render - Session status:", status);
   console.log("NavLinks render - Session data:", session);
 
-  if (!isClient) {
-    return null; // Don't render anything on the server
-  }
-
-  if (status === "loading") {
+  if (!isClient || isLoading) {
     return <div>Loading...</div>;
   }
 

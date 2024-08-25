@@ -53,6 +53,17 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   debug: process.env.NODE_ENV === 'development',
+  events: {
+    async signIn(message) {
+      console.log('User signed in:', message);
+    },
+    async signOut(message) {
+      console.log('User signed out:', message);
+    },
+    async session(message) {
+      console.log('Session updated:', message);
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);
