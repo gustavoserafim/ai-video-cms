@@ -121,4 +121,34 @@
        </form>                                                                                                                   
      </div>                                                                                                                      
    );                                                                                                                            
- }
+ }'use client'
+
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
+export default function CreatePost() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    }
+  }, [status, router]);
+
+  if (status === 'loading') {
+    return <div>Loading...</div>;
+  }
+
+  if (!session) {
+    return null;
+  }
+
+  return (
+    <div>
+      <h1>Create Post</h1>
+      {/* Add your create post form here */}
+    </div>
+  );
+}
