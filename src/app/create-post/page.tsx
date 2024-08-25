@@ -113,8 +113,9 @@ function CreatePost() {
    return (                                                                                               
     <div className="max-w-4xl mx-auto mt-10 px-4 sm:px-6 lg:px-8">                                       
       <Toaster />                                                                                        
-      <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight                 
-lg:text-6xl">Create New Post</h1>                                                                        
+      <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
+        Create New Post
+      </h1>
       <p className="mt-5 text-xl text-gray-500">Share your latest video content with the world.</p>      
       <form onSubmit={handleSubmit} className="mt-8 space-y-6">                                          
         <div className="rounded-md shadow-sm -space-y-px">                                               
@@ -126,9 +127,9 @@ lg:text-6xl">Create New Post</h1>
               value={title}                                                                              
               onChange={(e) => setTitle(e.target.value)}                                                 
               required                                                                                   
-              className="appearance-none rounded-none relative block w-full px-3 py-2 border             
-border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500   
-focus:border-blue-500 focus:z-10 sm:text-sm"                                                             
+              className="appearance-none rounded-none relative block w-full px-3 py-2 border
+                border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none
+                focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               placeholder="Title"                                                                        
             />                                                                                           
           </div>                                                                                         
@@ -140,9 +141,9 @@ focus:border-blue-500 focus:z-10 sm:text-sm"
               onChange={(e) => setDescription(e.target.value)}                                           
               required                                                                                   
               rows={4}                                                                                   
-              className="appearance-none rounded-none relative block w-full px-3 py-2 border             
-border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500                
-focus:border-blue-500 focus:z-10 sm:text-sm"                                                             
+              className="appearance-none rounded-none relative block w-full px-3 py-2 border
+                border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500
+                focus:border-blue-500 focus:z-10 sm:text-sm"
               placeholder="Description"                                                                  
             ></textarea>                                                                                 
           </div>                                                                                         
@@ -152,8 +153,7 @@ focus:border-blue-500 focus:z-10 sm:text-sm"
           <label htmlFor="image" className="block text-sm font-medium text-gray-700">                    
             Thumbnail Image (optional)                                                                   
           </label>                                                                                       
-          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed 
-rounded-md">                                                                                             
+          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
             <div className="space-y-1 text-center">                                                      
               <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none"         
 viewBox="0 0 48 48" aria-hidden="true">                                                                  
@@ -162,9 +162,9 @@ viewBox="0 0 48 48" aria-hidden="true">
 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />               
               </svg>                                                                                     
               <div className="flex text-sm text-gray-600">                                               
-                <label htmlFor="image" className="relative cursor-pointer bg-white rounded-md font-mediu 
-text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset 
-focus-within:ring-blue-500">                                                                             
+                <label htmlFor="image" className="relative cursor-pointer bg-white rounded-md font-medium
+                  text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2
+                  focus-within:ring-offset-2 focus-within:ring-blue-500">
                   <span>Upload a file</span>                                                             
                   <input                                                                                 
                     id="image"                                                                           
@@ -185,14 +185,13 @@ focus-within:ring-blue-500">
           <label htmlFor="video" className="block text-sm font-medium text-gray-700">                    
             Video                                                                                        
           </label>                                                                                       
-          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed 
-rounded-md">                                                                                             
+          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
             <div className="space-y-1 text-center">                                                      
               <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none"         
 viewBox="0 0 48 48" aria-hidden="true">                                                                  
-                <path d="M24 10.5v6m0 0l-3-3m3 3l3-3m-3.5 18.75h-10.5a2.25 2.25 0 01-2.25-2.25v-15a2.25  
-2.25 0 012.25-2.25h10.5a2.25 2.25 0 012.25 2.25v15a2.25 2.25 0 01-2.25 2.25z" strokeWidth="2"            
-strokeLinecap="round" strokeLinejoin="round" />                                                          
+                <path d="M24 10.5v6m0 0l-3-3m3 3l3-3m-3.5 18.75h-10.5a2.25 2.25 0 01-2.25-2.25v-15a2.25
+                  2.25 0 012.25-2.25h10.5a2.25 2.25 0 012.25 2.25v15a2.25 2.25 0 01-2.25 2.25z" strokeWidth="2"
+                  strokeLinecap="round" strokeLinejoin="round" />
               </svg>                                                                                     
               <div className="flex text-sm text-gray-600">                                               
                 <label htmlFor="video" className="relative cursor-pointer bg-white rounded-md font-mediu 
