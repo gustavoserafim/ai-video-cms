@@ -7,7 +7,15 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import toast, { Toaster } from 'react-hot-toast';
 
-export default function CreatePost() {
+export default function CreatePostWrapper() {
+  return (
+    <ErrorBoundary>
+      <CreatePost />
+    </ErrorBoundary>
+  );
+}
+
+function CreatePost() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState<File | null>(null);
@@ -89,7 +97,15 @@ export default function CreatePost() {
        router.push('/'); // Redirect to home page or post list
      } catch (error) {
        console.error('Error creating post:', error);
-       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+       let errorMessage = 'An unknown error occurred';
+       if (error instanceof Error) {
+         errorMessage = error.message;
+       } else if (typeof error === 'object' && error !== null && 'message' in error) {
+         errorMessage = String(error.message);
+       }
+       if (errorMessage.includes('TextDecoderStream')) {
+         errorMessage = 'There was an issue processing the video. Please try again or use a different video file.';
+       }
        toast.error('Error creating post: ' + errorMessage);
      }
    };
