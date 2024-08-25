@@ -23,22 +23,32 @@ function CreatePost() {
   const router = useRouter();
   const { data: session, status } = useSession();
 
-
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
-    }
+    const checkAuth = async () => {
+      if (status === 'unauthenticated') {
+        console.log('User is not authenticated, redirecting to login');
+        router.push('/login');
+      } else if (status === 'authenticated') {
+        console.log('User is authenticated');
+      }
+    };
+
+    checkAuth();
   }, [status, router]);
 
-  if (status === 'loading') {                                                                            
-    return <div className="flex justify-center items-center h-screen">                                   
-      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500" aria-label="Loading..."></div>  
-    </div>;                                                                                              
-  }   
+  if (status === 'loading') {
+    console.log('Session is loading');
+    return <div className="flex justify-center items-center h-screen">
+      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500" aria-label="Loading..."></div>
+    </div>;
+  }
 
   if (!session) {
+    console.log('No session available');
     return null;
   }
+
+  console.log('Rendering CreatePost component');
 
    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
      e.preventDefault();
