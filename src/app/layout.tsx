@@ -4,6 +4,7 @@ import "./globals.css";
 import Link from "next/link";
 import NavLinks from "@/components/NavLinks";
 import { Providers } from "@/components/Providers";
+import dynamic from 'next/dynamic';
 import ErrorBoundary from "@/components/ErrorBoundary";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -12,6 +13,11 @@ export const metadata: Metadata = {
   title: "Video CMS",
   description: "A Video Content Management System",
 };
+
+const ClientErrorBoundary = dynamic(
+  () => import('@/components/ErrorBoundary'),
+  { ssr: false }
+);
 
 export default function RootLayout({
   children,
@@ -22,7 +28,7 @@ export default function RootLayout({
     <html lang="en" className="h-full bg-gray-100">
       <body className={`${inter.className} h-full`}>
         <Providers>
-          <ErrorBoundary>
+          <ClientErrorBoundary>
             <div className="min-h-full">
               <nav className="bg-gray-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -47,7 +53,7 @@ export default function RootLayout({
                 </div>
               </main>
             </div>
-          </ErrorBoundary>
+          </ClientErrorBoundary>
         </Providers>
       </body>
     </html>
