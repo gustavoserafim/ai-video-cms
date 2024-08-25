@@ -6,7 +6,6 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import toast, { Toaster } from 'react-hot-toast';
-import ErrorBoundary from '@/components/ErrorBoundary';
 
 export default function CreatePostWrapper() {
   return (
