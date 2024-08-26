@@ -30,6 +30,13 @@ export default function MyPostsClient({ initialPosts }: { initialPosts: Post[] }
     }
   };
 
+  if (posts.length === 0) {
+    return <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-4">My Posts</h1>
+      <p>You haven't created any posts yet.</p>
+    </div>;
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">My Posts</h1>
@@ -45,7 +52,9 @@ export default function MyPostsClient({ initialPosts }: { initialPosts: Post[] }
           {posts.map((post) => (
             <tr key={post.id}>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
-                <Image src={post.thumbnail_url} alt={post.title} width={100} height={56} className="rounded" />
+                {post.thumbnail_url && (
+                  <Image src={post.thumbnail_url} alt={post.title} width={100} height={56} className="rounded" />
+                )}
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
                 <div className="text-sm leading-5 font-medium text-gray-900">{post.title}</div>
