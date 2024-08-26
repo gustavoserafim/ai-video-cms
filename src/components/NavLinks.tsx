@@ -29,6 +29,7 @@ export default function NavLinks() {
       {status === "authenticated" ? (
         <>
           <Link href="/create-post" className={linkClass}>Create Post</Link>
+          <Link href="/my-posts" className={linkClass}>My Posts</Link>
           <Link href="/api/auth/signout" className={linkClass}>Logout</Link>
         </>
       ) : (
