@@ -22,19 +22,34 @@ export default function MyPostsClient() {
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
-    } else if (status === 'authenticated' && session?.user?.id) {
-      fetchPosts(session.user.id);
+    } else if (status === 'authenticated' && session?.user) {
+      const userId = session.user.id || session.user.email;
+      console.log('Authenticated user ID:', userId);
+      fetchPosts(userId);
     }
   }, [status, session, router]);
 
   const fetchPosts = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      console.log('Fetching posts for user ID:', userId);
+      let { data, error } = await supabase
         .from('posts')
         .select('id, title, thumbnail_url')
         .eq('user_id', userId);
 
       if (error) throw error;
+
+      if (!data || data.length === 0) {
+        // If no posts found, try fetching with email as user_id
+        ({ data, error } = await supabase
+          .from('posts')
+          .select('id, title, thumbnail_url')
+          .eq('user_id', session?.user?.email));
+
+        if (error) throw error;
+      }
+
+      console.log('Fetched posts:', data);
       setPosts(data || []);
     } catch (error) {
       console.error('Error fetching posts:', error);
