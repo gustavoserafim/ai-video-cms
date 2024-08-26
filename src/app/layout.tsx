@@ -6,6 +6,8 @@ import NavLinks from "@/components/NavLinks";
 import { Providers } from "@/components/Providers";
 import dynamic from 'next/dynamic';
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "./api/auth/[...nextauth]/route";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,15 +21,17 @@ const ClientErrorBoundary = dynamic(
   { ssr: false }
 );
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en" className="h-full bg-gray-100">
       <body className={`${inter.className} h-full`}>
-        <Providers>
+        <Providers session={session}>
           <ClientErrorBoundary>
             <div className="min-h-full">
               <nav className="bg-gray-800">
