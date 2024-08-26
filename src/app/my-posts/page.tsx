@@ -33,10 +33,13 @@ export default async function MyPosts() {
   }
 
   try {
+    console.log('Session:', session);
     const posts = await getPosts(session.user.id);
+    console.log('Posts:', posts);
     return <MyPostsClient initialPosts={posts} />;
   } catch (error) {
     console.error('Error in MyPosts:', error);
+    console.log('Session:', session);
     return <div>Error loading posts. Please try again later.</div>;
   }
 }
