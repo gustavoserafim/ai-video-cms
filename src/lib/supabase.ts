@@ -8,3 +8,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+export async function deletePost(postId: number) {
+  const { error } = await supabase
+    .from('posts')
+    .delete()
+    .eq('id', postId);
+  
+  if (error) throw error;
+}
