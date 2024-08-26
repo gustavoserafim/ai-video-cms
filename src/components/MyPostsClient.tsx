@@ -1,8 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 interface Post {
   id: number;
@@ -10,8 +13,35 @@ interface Post {
   thumbnail_url: string;
 }
 
-export default function MyPostsClient({ initialPosts }: { initialPosts: Post[] }) {
-  const [posts, setPosts] = useState<Post[]>(initialPosts);
+export default function MyPostsClient() {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    } else if (status === 'authenticated' && session?.user?.id) {
+      fetchPosts(session.user.id);
+    }
+  }, [status, session, router]);
+
+  const fetchPosts = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('id, title, thumbnail_url')
+        .eq('user_id', userId);
+
+      if (error) throw error;
+      setPosts(data || []);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleDelete = async (postId: number) => {
     if (confirm('Are you sure you want to delete this post?')) {
@@ -30,11 +60,17 @@ export default function MyPostsClient({ initialPosts }: { initialPosts: Post[] }
     }
   };
 
+  if (loading) {
+    return <div className="container mx-auto px-4 py-8">Loading...</div>;
+  }
+
   if (posts.length === 0) {
-    return <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">My Posts</h1>
-      <p>You haven't created any posts yet.</p>
-    </div>;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold mb-4">My Posts</h1>
+        <p>You haven't created any posts yet.</p>
+      </div>
+    );
   }
 
   return (
