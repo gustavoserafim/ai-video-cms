@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useSession } from 'next-auth/react';
+import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
@@ -33,11 +33,19 @@ export default function MyPostsClient() {
       console.log('Session information:', session);
       console.log('Fetching posts for user ID:', session.user.id);
 
-      const token = session.accessToken;
-      if (!token) {
-        console.error('No access token found in session');
-        throw new Error('No access token');
-      }
+      let token = session.accessToken;                                     
+      if (!token) {                                                        
+        console.log('No access token found in session. Attempting to refresh...');                                                              
+        const refreshedSession = await signIn('credentials', { redirect: false });                                                                  
+        if (refreshedSession?.error) {                                     
+          throw new Error('Failed to refresh session');                    
+        }                                                                  
+        token = refreshedSession?.accessToken;                             
+      }                                                                    
+                                                                           
+      if (!token) {                                                        
+        throw new Error('Still no access token after refresh attempt');    
+      }  
 
       // Set the auth token for this request
       supabase.auth.setAuth(token);
