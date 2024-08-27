@@ -80,7 +80,8 @@ export default function EditPost({ params }: { params: { id: string } }) {
     );
 
     const fileExt = file.name.split('.').pop();
-    const fileName = `${session.user.id}/${Math.random()}.${fileExt}`;
+    const timestamp = new Date().getTime();
+    const fileName = `${session.user.id}/${timestamp}.${fileExt}`;
     const { data, error } = await supabase.storage
       .from(bucket)
       .upload(fileName, file);
