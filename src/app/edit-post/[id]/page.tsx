@@ -99,8 +99,8 @@ export default function EditPost({ params }: { params: { id: string } }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!session?.accessToken) {
-      setError('No access token available');
+    if (!session?.accessToken || !session.user?.id) {
+      setError('No access token or user ID available');
       return;
     }
 
@@ -138,11 +138,32 @@ export default function EditPost({ params }: { params: { id: string } }) {
       };
 
       console.log('Updating post with data:', updateData);
+      console.log('Post ID:', params.id);
+      console.log('User ID:', session.user.id);
 
+      // First, check if the post exists and belongs to the user
+      const { data: existingPost, error: fetchError } = await supabase
+        .from('posts')
+        .select()
+        .eq('id', params.id)
+        .eq('user_id', session.user.id)
+        .single();
+
+      if (fetchError) {
+        console.error('Error fetching existing post:', fetchError);
+        throw new Error('Failed to fetch existing post');
+      }
+
+      if (!existingPost) {
+        throw new Error('Post not found or does not belong to the current user');
+      }
+
+      // If the post exists and belongs to the user, proceed with the update
       const { data, error } = await supabase
         .from('posts')
         .update(updateData)
         .eq('id', params.id)
+        .eq('user_id', session.user.id)  // Ensure we're updating the correct user's post
         .select();
 
       if (error) {
@@ -158,7 +179,11 @@ export default function EditPost({ params }: { params: { id: string } }) {
 
       router.push('/my-posts');
     } catch (error) {
-      setError('Failed to update post');
+      if (error instanceof Error) {
+        setError(`Failed to update post: ${error.message}`);
+      } else {
+        setError('Failed to update post: Unknown error');
+      }
       console.error('Error updating post:', error);
     }
   };
