@@ -47,8 +47,8 @@ export default function MyPostsClient() {
         throw new Error('Still no access token after refresh attempt');    
       }  
 
-      // Set the auth token for this request
-      supabase.auth.setAuth(token);
+      // Set the session for this request
+      await supabase.auth.setSession({ access_token: token, refresh_token: '' });
 
       const { data, error, count } = await supabase
         .from('posts')
