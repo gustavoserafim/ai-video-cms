@@ -31,14 +31,10 @@ export default function MyPostsClient() {
 
     try {
       console.log('Fetching posts for user ID:', session.user.id);
-      const query = supabase
+      const { data, error, count } = await supabase
         .from('posts')
-        .select('id, title, thumbnail_url')
+        .select('id, title, thumbnail_url', { count: 'exact' })
         .eq('user_id', session.user.id);
-
-      console.log('Supabase query:', query.toSQL());
-
-      const { data, error, count } = await query;
 
       if (error) throw error;
 
