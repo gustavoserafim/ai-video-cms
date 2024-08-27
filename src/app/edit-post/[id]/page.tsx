@@ -11,6 +11,9 @@ interface Post {
   description: string;
   thumbnail_url: string;
   video_url: string;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export default function EditPost({ params }: { params: { id: string } }) {
@@ -95,7 +98,10 @@ export default function EditPost({ params }: { params: { id: string } }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!session?.accessToken) return;
+    if (!session?.accessToken) {
+      setError('No access token available');
+      return;
+    }
 
     try {
       let thumbnailUrl = post?.thumbnail_url;
@@ -121,13 +127,31 @@ export default function EditPost({ params }: { params: { id: string } }) {
         }
       );
 
-      const { error } = await supabase
+      const updateData = {
+        title,
+        description,
+        thumbnail_url: thumbnailUrl,
+        video_url: videoUrl,
+        updated_at: new Date().toISOString()
+      };
+
+      console.log('Updating post with data:', updateData);
+
+      const { data, error } = await supabase
         .from('posts')
-        .update({ title, description, thumbnail_url: thumbnailUrl, video_url: videoUrl })
-        .eq('id', params.id);
+        .update(updateData)
+        .eq('id', params.id)
+        .select();
 
       if (error) {
+        console.error('Supabase update error:', error);
         throw error;
+      }
+
+      console.log('Update response:', data);
+
+      if (!data || data.length === 0) {
+        throw new Error('No rows were updated');
       }
 
       router.push('/my-posts');
