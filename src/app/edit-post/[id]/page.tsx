@@ -149,6 +149,9 @@ export default function EditPost({ params }: { params: { id: string } }) {
         .eq('user_id', session.user.id)
         .single();
 
+      console.log('Existing post:', existingPost);
+      console.log('Fetch error:', fetchError);
+
       if (fetchError) {
         console.error('Error fetching existing post:', fetchError);
         throw new Error('Failed to fetch existing post');
@@ -166,16 +169,24 @@ export default function EditPost({ params }: { params: { id: string } }) {
         .eq('user_id', session.user.id)  // Ensure we're updating the correct user's post
         .select();
 
+      console.log('Update response:', data);
+      console.log('Update error:', error);
+
       if (error) {
         console.error('Supabase update error:', error);
         throw error;
       }
 
-      console.log('Update response:', data);
-
       if (!data || data.length === 0) {
         throw new Error('No rows were updated');
       }
+
+      // Log the policies for the 'posts' table
+      const { data: policies, error: policiesError } = await supabase
+        .rpc('get_policies', { table_name: 'posts' });
+
+      console.log('Policies for posts table:', policies);
+      console.log('Policies error:', policiesError);
 
       router.push('/my-posts');
     } catch (error) {
