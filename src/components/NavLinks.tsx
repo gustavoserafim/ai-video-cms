@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { usePathname } from 'next/navigation';
 
 export default function NavLinks() {
   const { data: session, status } = useSession();
   const [isClient, setIsClient] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     setIsClient(true);
@@ -14,6 +16,10 @@ export default function NavLinks() {
 
   const linkClass = "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium";
   const activeLinkClass = "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium";
+
+  const getLinkClass = (path: string) => {
+    return pathname === path ? activeLinkClass : linkClass;
+  };
 
   if (!isClient) {
     return null;
@@ -25,17 +31,17 @@ export default function NavLinks() {
 
   return (
     <>
-      <Link href="/" className={activeLinkClass}>Home</Link>
+      <Link href="/" className={getLinkClass('/')}>Home</Link>
       {status === "authenticated" ? (
         <>
-          <Link href="/create-post" className={linkClass}>Create Post</Link>
-          <Link href="/my-posts" className={linkClass}>My Posts</Link>
+          <Link href="/create-post" className={getLinkClass('/create-post')}>Create Post</Link>
+          <Link href="/my-posts" className={getLinkClass('/my-posts')}>My Posts</Link>
           <Link href="/api/auth/signout" className={linkClass}>Logout</Link>
         </>
       ) : (
         <>
-          <Link href="/login" className={linkClass}>Login</Link>
-          <Link href="/signup" className={linkClass}>Sign Up</Link>
+          <Link href="/login" className={getLinkClass('/login')}>Login</Link>
+          <Link href="/signup" className={getLinkClass('/signup')}>Sign Up</Link>
         </>
       )}
     </>
