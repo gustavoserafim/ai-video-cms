@@ -144,6 +144,7 @@ export default function MyPostsClient() {
               </td>
               <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300 text-sm leading-5 font-medium">
                 <Link href={`/post/${post.id}`} className="text-indigo-600 hover:text-indigo-900 mr-4">View</Link>
+                <Link href={`/edit-post/${post.id}`} className="text-green-600 hover:text-green-900 mr-4">Edit</Link>
                 <button onClick={() => handleDelete(post.id)} className="text-red-600 hover:text-red-900">Delete</button>
               </td>
             </tr>
