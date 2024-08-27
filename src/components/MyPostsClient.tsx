@@ -22,6 +22,7 @@ export default function MyPostsClient() {
 
   const fetchPosts = useCallback(async () => {
     if (!session?.user?.id || fetchedRef.current) {
+      console.log('Skipping fetch: No user ID or already fetched');
       return;
     }
 
@@ -30,14 +31,20 @@ export default function MyPostsClient() {
 
     try {
       console.log('Fetching posts for user ID:', session.user.id);
-      const { data, error } = await supabase
+      const query = supabase
         .from('posts')
         .select('id, title, thumbnail_url')
         .eq('user_id', session.user.id);
 
+      console.log('Supabase query:', query.toSQL());
+
+      const { data, error, count } = await query;
+
       if (error) throw error;
 
       console.log('Fetched posts:', data);
+      console.log('Total count:', count);
+      console.log('Full response:', { data, error, count });
       setPosts(data || []);
     } catch (error) {
       console.error('Error fetching posts:', error);
