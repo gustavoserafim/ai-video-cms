@@ -13,7 +13,9 @@ export async function middleware(request: NextRequest) {
     
     console.log('Token:', token ? 'exists' : 'does not exist');
 
-    if (request.nextUrl.pathname === '/create-post') {
+    const allowedPaths = ['/create-post']; // Define the allowed paths
+
+    if (allowedPaths.includes(request.nextUrl.pathname)) {
       if (!token) {
         console.log('Redirecting unauthenticated user to login');
         return NextResponse.redirect(new URL('/login', request.url));

@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['img-dev.fanherocdn.com'],
+    domains: ['img-dev.fanherocdn.com', 'luwurfwcmfjxayzivkgc.supabase.co'],
   },
 };
 

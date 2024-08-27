@@ -9,9 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@next-auth/supabase-adapter": "^0.2.1",
+    "@supabase/supabase-js": "^2.45.2",
+    "next": "14.2.6",
+    "next-auth": "^4.24.7",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.6"
+    "react-hot-toast": "^2.4.1"
   },
   "devDependencies": {
     "typescript": "^5",

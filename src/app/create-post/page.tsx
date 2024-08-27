@@ -82,7 +82,7 @@ function CreatePost() {
           title,
           description,
           video_url: videoUrl,
-          image_url: imageUrl,
+          thumbnail_url: imageUrl,
         });
 
       if (error) throw error;
