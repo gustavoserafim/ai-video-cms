@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
@@ -19,15 +19,7 @@ export default function MyPostsClient() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
-    } else if (status === 'authenticated' && session?.user) {
-      fetchPosts();
-    }
-  }, [status, session, router]);
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     if (!session?.user?.id) {
       console.error('User ID not available');
       setLoading(false);
@@ -50,7 +42,15 @@ export default function MyPostsClient() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [session?.user?.id]);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    } else if (status === 'authenticated' && session?.user) {
+      fetchPosts();
+    }
+  }, [status, session, router, fetchPosts]);
 
   const handleDelete = async (postId: number) => {
     if (confirm('Are you sure you want to delete this post?')) {
