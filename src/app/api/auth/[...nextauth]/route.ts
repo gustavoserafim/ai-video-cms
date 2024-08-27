@@ -25,7 +25,10 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        return data.user;
+        return {
+          ...data.user,
+          access_token: data.session?.access_token
+        };
       }
     })
   ],
@@ -34,6 +37,8 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.email = user.email;
+        // Include the Supabase access token in the JWT
+        token.accessToken = (user as any).access_token;
       }
       return token;
     },
@@ -41,6 +46,8 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
+        // Pass the access token to the session
+        session.accessToken = token.accessToken as string;
       }
       return session;
     },
