@@ -133,7 +133,8 @@ export default function EditPost({ params }: { params: { id: string } }) {
         description,
         thumbnail_url: thumbnailUrl,
         video_url: videoUrl,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        user_id: session.user.id
       };
 
       console.log('Updating post with data:', updateData);
