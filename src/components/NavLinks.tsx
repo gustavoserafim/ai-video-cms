@@ -30,7 +30,7 @@ export default function NavLinks() {
   }
 
   return (
-    <>
+    <div className="flex items-center space-x-4">
       <Link href="/" className={getLinkClass('/')}>Home</Link>
       {status === "authenticated" ? (
         <>
@@ -44,6 +44,6 @@ export default function NavLinks() {
           <Link href="/signup" className={getLinkClass('/signup')}>Sign Up</Link>
         </>
       )}
-    </>
+    </div>
   );
 }
