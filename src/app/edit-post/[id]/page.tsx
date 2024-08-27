@@ -25,9 +25,12 @@ export default function EditPost({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    }
     const fetchPost = async () => {
       if (!session?.accessToken) return;
 
@@ -199,7 +202,7 @@ export default function EditPost({ params }: { params: { id: string } }) {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  // if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!post) return <div>Post not found</div>;
 

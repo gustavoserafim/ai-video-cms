@@ -41,7 +41,6 @@ export default async function RootLayout({
                     <div className="flex-shrink-0">
                       <Link href="/" className="flex items-center">
                         <img className="h-8 w-8" src="/next.svg" alt="Video CMS" />
-                        <span className="text-white ml-2 text-lg font-semibold">Video CMS</span>
                       </Link>
                     </div>
                     <div className="hidden md:block">
