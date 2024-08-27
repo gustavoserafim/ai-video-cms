@@ -62,7 +62,7 @@ export default function EditPost({ params }: { params: { id: string } }) {
   }, [params.id, session]);
 
   const uploadFile = useCallback(async (file: File, bucket: string) => {
-    if (!session?.accessToken) return null;
+    if (!session?.accessToken || !session.user?.id) return null;
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -77,7 +77,7 @@ export default function EditPost({ params }: { params: { id: string } }) {
     );
 
     const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
+    const fileName = `${session.user.id}/${Math.random()}.${fileExt}`;
     const { data, error } = await supabase.storage
       .from(bucket)
       .upload(fileName, file);
