@@ -23,31 +23,25 @@ export default function MyPostsClient() {
     if (status === 'unauthenticated') {
       router.push('/login');
     } else if (status === 'authenticated' && session?.user) {
-      const userId = session.user.id || session.user.email;
-      console.log('Authenticated user ID:', userId);
-      fetchPosts(userId);
+      fetchPosts();
     }
   }, [status, session, router]);
 
-  const fetchPosts = async (userId: string) => {
+  const fetchPosts = async () => {
+    if (!session?.user?.id) {
+      console.error('User ID not available');
+      setLoading(false);
+      return;
+    }
+
     try {
-      console.log('Fetching posts for user ID:', userId);
-      let { data, error } = await supabase
+      console.log('Fetching posts for user ID:', session.user.id);
+      const { data, error } = await supabase
         .from('posts')
         .select('id, title, thumbnail_url')
-        .eq('user_id', userId);
+        .eq('user_id', session.user.id);
 
       if (error) throw error;
-
-      if (!data || data.length === 0) {
-        // If no posts found, try fetching with email as user_id
-        ({ data, error } = await supabase
-          .from('posts')
-          .select('id, title, thumbnail_url')
-          .eq('user_id', session?.user?.email));
-
-        if (error) throw error;
-      }
 
       console.log('Fetched posts:', data);
       setPosts(data || []);
