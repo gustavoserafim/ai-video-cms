@@ -102,11 +102,11 @@ export default function EditPost({ params }: { params: { id: string } }) {
       let videoUrl = post?.video_url;
 
       if (thumbnailFile) {
-        thumbnailUrl = await uploadFile(thumbnailFile, 'thumbnails');
+        thumbnailUrl = await uploadFile(thumbnailFile, 'image');
       }
 
       if (videoFile) {
-        videoUrl = await uploadFile(videoFile, 'videos');
+        videoUrl = await uploadFile(videoFile, 'video');
       }
 
       const supabase = createClient(
