@@ -42,10 +42,10 @@ export default function MyPostsClient() {
       console.log('Access token obtained:', token);
       console.log('Fetching posts for user ID:', session.user.id);
 
-      // Set the session for this request
-      await supabase.auth.setSession({ access_token: token, refresh_token: '' });
+      // Create a new Supabase client with the user's access token
+      const supabaseWithAuth = supabase.auth.setSession({ access_token: token, refresh_token: '' });
 
-      const { data, error, count } = await supabase
+      const { data, error, count } = await supabaseWithAuth.client
         .from('posts')
         .select('id, title, thumbnail_url', { count: 'exact' })
         .eq('user_id', session.user.id);
