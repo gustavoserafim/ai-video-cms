@@ -30,11 +30,22 @@ export default function MyPostsClient() {
     setLoading(true);
 
     try {
+      console.log('Session information:', session);
       console.log('Fetching posts for user ID:', session.user.id);
+
+      const token = session.accessToken;
+      if (!token) {
+        console.error('No access token found in session');
+        throw new Error('No access token');
+      }
+
+      // Set the auth token for this request
+      supabase.auth.setAuth(token);
+
       const { data, error, count } = await supabase
         .from('posts')
         .select('id, title, thumbnail_url', { count: 'exact' })
-        // .eq('user_id', session.user.id);
+        .eq('user_id', session.user.id);
 
       if (error) throw error;
 
@@ -48,7 +59,7 @@ export default function MyPostsClient() {
     } finally {
       setLoading(false);
     }
-  }, [session?.user?.id]);
+  }, [session]);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
