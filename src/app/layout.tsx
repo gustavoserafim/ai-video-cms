@@ -38,15 +38,14 @@ export default async function RootLayout({
               <nav className="bg-gray-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                   <div className="flex items-center justify-between h-16">
-                    <div className="flex items-center">
-                      <Link href="/" className="flex-shrink-0">
+                    <div className="flex-shrink-0">
+                      <Link href="/" className="flex items-center">
                         <img className="h-8 w-8" src="/next.svg" alt="Video CMS" />
+                        <span className="text-white ml-2 text-lg font-semibold">Video CMS</span>
                       </Link>
-                      <div className="hidden md:block">
-                        <div className="ml-10 flex items-baseline space-x-4">
-                          <NavLinks />
-                        </div>
-                      </div>
+                    </div>
+                    <div className="hidden md:block">
+                      <NavLinks />
                     </div>
                   </div>
                 </div>
