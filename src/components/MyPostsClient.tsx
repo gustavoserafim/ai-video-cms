@@ -32,33 +32,15 @@ export default function MyPostsClient() {
     try {
       console.log('Initial session information:', session);
 
-      // Attempt to get the most up-to-date session
-      const currentSession = await getSession();
-      console.log('Current session from getSession():', currentSession);
-
-      let token = currentSession?.accessToken;
+      // Use the access token directly from the session
+      const token = session.accessToken;
 
       if (!token) {
-        console.log('No access token found in current session. Attempting to sign in again...');
-        const result = await signIn('credentials', { redirect: false });
-        console.log('Sign in result:', result);
-
-        if (result?.error) {
-          throw new Error(`Failed to sign in: ${result.error}`);
-        }
-
-        // Fetch the session again after signing in
-        const newSession = await getSession();
-        console.log('New session after sign in:', newSession);
-        token = newSession?.accessToken;
-      }
-
-      if (!token) {
-        throw new Error('Still no access token after sign in attempt');
+        throw new Error('No access token found in session');
       }
 
       console.log('Access token obtained:', token);
-      console.log('Fetching posts for user ID:', currentSession?.user?.id || session.user.id);
+      console.log('Fetching posts for user ID:', session.user.id);
 
       // Set the session for this request
       await supabase.auth.setSession({ access_token: token, refresh_token: '' });
@@ -66,7 +48,7 @@ export default function MyPostsClient() {
       const { data, error, count } = await supabase
         .from('posts')
         .select('id, title, thumbnail_url', { count: 'exact' })
-        .eq('user_id', currentSession?.user?.id || session.user.id);
+        .eq('user_id', session.user.id);
 
       if (error) throw error;
 
