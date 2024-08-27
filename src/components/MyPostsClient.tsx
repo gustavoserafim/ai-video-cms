@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
@@ -18,13 +18,15 @@ export default function MyPostsClient() {
   const [loading, setLoading] = useState(true);
   const { data: session, status } = useSession();
   const router = useRouter();
+  const fetchedRef = useRef(false);
 
   const fetchPosts = useCallback(async () => {
-    if (!session?.user?.id) {
-      console.error('User ID not available');
-      setLoading(false);
+    if (!session?.user?.id || fetchedRef.current) {
       return;
     }
+
+    fetchedRef.current = true;
+    setLoading(true);
 
     try {
       console.log('Fetching posts for user ID:', session.user.id);
@@ -39,6 +41,7 @@ export default function MyPostsClient() {
       setPosts(data || []);
     } catch (error) {
       console.error('Error fetching posts:', error);
+      fetchedRef.current = false;
     } finally {
       setLoading(false);
     }
@@ -51,6 +54,13 @@ export default function MyPostsClient() {
       fetchPosts();
     }
   }, [status, session, router, fetchPosts]);
+
+  // Reset fetchedRef when component unmounts
+  useEffect(() => {
+    return () => {
+      fetchedRef.current = false;
+    };
+  }, []);
 
   const handleDelete = async (postId: number) => {
     if (confirm('Are you sure you want to delete this post?')) {
