@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useSession, signIn, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
 interface Post {
   id: number;
@@ -42,11 +42,21 @@ export default function MyPostsClient() {
       console.log('Access token obtained:', token);
       console.log('Fetching posts for user ID:', session.user.id);
 
-      // Set the session for the Supabase client
-      await supabase.auth.setSession({ access_token: token, refresh_token: '' });
+      // Create a new Supabase client with the user's access token
+      const supabaseWithAuth = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          global: {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        }
+      );
 
-      // Now use the updated Supabase client
-      const { data, error, count } = await supabase
+      // Use the new client with the correct authorization
+      const { data, error, count } = await supabaseWithAuth
         .from('posts')
         .select('id, title, thumbnail_url', { count: 'exact' })
         .eq('user_id', session.user.id);
