@@ -34,7 +34,7 @@ export default function MyPostsClient() {
       const { data, error, count } = await supabase
         .from('posts')
         .select('id, title, thumbnail_url', { count: 'exact' })
-        .eq('user_id', session.user.id);
+        // .eq('user_id', session.user.id);
 
       if (error) throw error;
 
