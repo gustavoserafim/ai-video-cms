@@ -30,12 +30,12 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions);
 
   return (
-    <html lang="en" className="h-full bg-gray-100">
+    <html lang="en" className="h-full bg-zinc-100">
       <body className={`${inter.className} h-full`}>
         <Providers session={session as Session | null}>
           <ClientErrorBoundary>
             <div className="min-h-full">
-              <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-800">
+              <nav className="fixed top-0 left-0 right-0 z-50 bg-zinc-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                   <div className="flex items-center justify-between h-16">
                     <div className="flex-shrink-0">
