@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { usePathname } from 'next/navigation';
+import { Button } from "@/components/ui/button";
 
 export default function NavLinks() {
   const { data: session, status } = useSession();
@@ -14,11 +15,8 @@ export default function NavLinks() {
     setIsClient(true);
   }, []);
 
-  const linkClass = "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium";
-  const activeLinkClass = "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium";
-
-  const getLinkClass = (path: string) => {
-    return pathname === path ? activeLinkClass : linkClass;
+  const getLinkVariant = (path: string) => {
+    return pathname === path ? "secondary" : "ghost";
   };
 
   if (!isClient) {
@@ -30,20 +28,32 @@ export default function NavLinks() {
   }
 
   return (
-    <div className="flex items-center space-x-4">
-      <Link href="/" className={getLinkClass('/')}>Home</Link>
+    <nav className="flex items-center space-x-4">
+      <Button asChild variant={getLinkVariant('/')}>
+        <Link href="/">Home</Link>
+      </Button>
       {status === "authenticated" ? (
         <>
-          <Link href="/create-post" className={getLinkClass('/create-post')}>Create Post</Link>
-          <Link href="/my-posts" className={getLinkClass('/my-posts')}>My Posts</Link>
-          <Link href="/api/auth/signout" className={linkClass}>Logout</Link>
+          <Button asChild variant={getLinkVariant('/create-post')}>
+            <Link href="/create-post">Create Post</Link>
+          </Button>
+          <Button asChild variant={getLinkVariant('/my-posts')}>
+            <Link href="/my-posts">My Posts</Link>
+          </Button>
+          <Button asChild variant="ghost">
+            <Link href="/api/auth/signout">Logout</Link>
+          </Button>
         </>
       ) : (
         <>
-          <Link href="/login" className={getLinkClass('/login')}>Login</Link>
-          <Link href="/signup" className={getLinkClass('/signup')}>Sign Up</Link>
+          <Button asChild variant={getLinkVariant('/login')}>
+            <Link href="/login">Login</Link>
+          </Button>
+          <Button asChild variant={getLinkVariant('/signup')}>
+            <Link href="/signup">Sign Up</Link>
+          </Button>
         </>
       )}
-    </div>
+    </nav>
   );
 }
