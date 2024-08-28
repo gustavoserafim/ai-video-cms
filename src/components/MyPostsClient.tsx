@@ -152,7 +152,14 @@ export default function MyPostsClient() {
               <TableRow key={post.id}>
                 <TableCell>
                   {post.thumbnail_url && (
-                    <Image src={post.thumbnail_url} alt={post.title} width={100} height={56} className="rounded" />
+                    <Image 
+                      src={post.thumbnail_url} 
+                      alt={post.title} 
+                      width={100} 
+                      height={56} 
+                      className="rounded" 
+                      unoptimized
+                    />
                   )}
                 </TableCell>
                 <TableCell className="font-medium">{post.title}</TableCell>
