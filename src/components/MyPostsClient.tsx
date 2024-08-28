@@ -3,9 +3,12 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useSession, signIn, getSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 
 interface Post {
   id: number;
@@ -108,49 +111,69 @@ export default function MyPostsClient() {
   };
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>;
+    return (
+      <Card className="w-full max-w-4xl mx-auto mt-8">
+        <CardContent className="p-6">
+          <div className="text-center">Loading...</div>
+        </CardContent>
+      </Card>
+    );
   }
 
   if (posts.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-4">My Posts</h1>
-        <p>You haven't created any posts yet.</p>
-      </div>
+      <Card className="w-full max-w-4xl mx-auto mt-8">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">My Posts</CardTitle>
+        </CardHeader>
+        <CardContent className="p-6">
+          <p>You haven't created any posts yet.</p>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4 text-zinc-800">My Posts</h1>
-      <table className="min-w-full bg-zinc-50 shadow-md rounded-lg overflow-hidden">
-        <thead className="bg-zinc-200">
-          <tr>
-            <th className="px-6 py-3 border-b border-zinc-300 text-left text-xs leading-4 font-medium text-zinc-600 uppercase tracking-wider">Thumbnail</th>
-            <th className="px-6 py-3 border-b border-zinc-300 text-left text-xs leading-4 font-medium text-zinc-600 uppercase tracking-wider">Title</th>
-            <th className="px-6 py-3 border-b border-zinc-300 text-left text-xs leading-4 font-medium text-zinc-600 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-zinc-200">
-          {posts.map((post) => (
-            <tr key={post.id} className="hover:bg-zinc-100 transition-colors duration-200">
-              <td className="px-6 py-4 whitespace-no-wrap">
-                {post.thumbnail_url && (
-                  <Image src={post.thumbnail_url} alt={post.title} width={100} height={56} className="rounded" />
-                )}
-              </td>
-              <td className="px-6 py-4 whitespace-no-wrap">
-                <div className="text-sm leading-5 font-medium text-zinc-900">{post.title}</div>
-              </td>
-              <td className="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium">
-                <Link href={`/post/${post.id}`} className="text-zinc-600 hover:text-zinc-900 mr-4">View</Link>
-                <Link href={`/edit-post/${post.id}`} className="text-zinc-600 hover:text-zinc-900 mr-4">Edit</Link>
-                <button onClick={() => handleDelete(post.id)} className="text-red-600 hover:text-red-900">Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Card className="w-full max-w-4xl mx-auto mt-8">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold">My Posts</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Thumbnail</TableHead>
+              <TableHead>Title</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {posts.map((post) => (
+              <TableRow key={post.id}>
+                <TableCell>
+                  {post.thumbnail_url && (
+                    <Image src={post.thumbnail_url} alt={post.title} width={100} height={56} className="rounded" />
+                  )}
+                </TableCell>
+                <TableCell className="font-medium">{post.title}</TableCell>
+                <TableCell>
+                  <div className="space-x-2">
+                    <Button variant="outline" asChild>
+                      <Link href={`/post/${post.id}`}>View</Link>
+                    </Button>
+                    <Button variant="outline" asChild>
+                      <Link href={`/edit-post/${post.id}`}>Edit</Link>
+                    </Button>
+                    <Button variant="destructive" onClick={() => handleDelete(post.id)}>
+                      Delete
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }
