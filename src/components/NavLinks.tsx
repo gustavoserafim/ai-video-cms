@@ -16,7 +16,7 @@ export default function NavLinks() {
   }, []);
 
   const getLinkVariant = (path: string) => {
-    return pathname === path ? "secondary" : "ghost";
+    return pathname === path ? "transparent" : "transparent";
   };
 
   if (!isClient) {
@@ -28,28 +28,28 @@ export default function NavLinks() {
   }
 
   return (
-    <nav className="flex items-center space-x-4 bg-zinc-800 p-4 rounded-lg">
-      <Button asChild variant={getLinkVariant('/')} className="text-zinc-100 hover:text-zinc-200">
+    <nav className="flex items-center space-x-4 rounded-lg">
+      <Button asChild variant={getLinkVariant('/')} className="text-zinc-100 hover:text-violet-400">
         <Link href="/">Home</Link>
       </Button>
       {status === "authenticated" ? (
         <>
-          <Button asChild variant={getLinkVariant('/create-post')} className="text-zinc-100 hover:text-zinc-200">
+          <Button asChild variant={getLinkVariant('/create-post')} className="text-zinc-100 hover:text-violet-400">
             <Link href="/create-post">Create Post</Link>
           </Button>
-          <Button asChild variant={getLinkVariant('/my-posts')} className="text-zinc-100 hover:text-zinc-200">
+          <Button asChild variant={getLinkVariant('/my-posts')} className="text-zinc-100 hover:text-violet-400">
             <Link href="/my-posts">My Posts</Link>
           </Button>
-          <Button asChild variant="ghost" className="text-zinc-100 hover:text-zinc-200">
+          <Button asChild variant="ghost" className="text-zinc-100 hover:text-violet-400">
             <Link href="/api/auth/signout">Logout</Link>
           </Button>
         </>
       ) : (
         <>
-          <Button asChild variant={getLinkVariant('/login')} className="text-zinc-100 hover:text-zinc-200">
+          <Button asChild variant={getLinkVariant('/login')} className="text-zinc-100 hover:text-violet-400">
             <Link href="/login">Login</Link>
           </Button>
-          <Button asChild variant={getLinkVariant('/signup')} className="text-zinc-100 hover:text-zinc-200">
+          <Button asChild variant={getLinkVariant('/signup')} className="text-zinc-100 hover:text-violet-400">
             <Link href="/signup">Sign Up</Link>
           </Button>
         </>

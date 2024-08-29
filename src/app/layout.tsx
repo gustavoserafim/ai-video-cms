@@ -30,17 +30,17 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions);
 
   return (
-    <html lang="en" className="h-full bg-zinc-100">
+    <html lang="en" className="h-full bg-white">
       <body className={`${inter.className} h-full`}>
         <Providers session={session as Session | null}>
           <ClientErrorBoundary>
             <div className="min-h-full">
-              <nav className="fixed top-0 left-0 right-0 z-50 bg-zinc-800">
+              <nav className="fixed top-0 left-0 right-0 z-50 bg-violet-950">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                   <div className="flex items-center justify-between h-16">
                     <div className="flex-shrink-0">
                       <Link href="/" className="flex items-center">
-                        <img className="h-8 w-8" src="/next.svg" alt="Video CMS" />
+                        <img className="h-6" src="/logo.png" alt="Video CMS" />
                       </Link>
                     </div>
                     <div className="hidden md:block">
