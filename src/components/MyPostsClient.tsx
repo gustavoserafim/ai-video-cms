@@ -9,6 +9,8 @@ import { createClient } from '@supabase/supabase-js';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { getPrivateMediaUrl } from "@/lib/utils";
+import { getValidSession } from "@/lib/utils";
 
 interface Post {
   id: number;
@@ -22,10 +24,10 @@ export default function MyPostsClient() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const fetchedRef = useRef(false);
+  const [mediaUrls, setMediaUrls] = useState<{[key: number]: string}>({});
 
   const fetchPosts = useCallback(async () => {
-    if (!session?.user?.id || fetchedRef.current) {
-      console.log('Skipping fetch: No user ID or already fetched');
+    if (fetchedRef.current) {
       return;
     }
 
@@ -33,9 +35,11 @@ export default function MyPostsClient() {
     setLoading(true);
 
     try {
-      console.log('Initial session information:', session);
+      const session = await getValidSession();
+      if (!session?.user?.id) {
+        throw new Error('No user ID found in session');
+      }
 
-      // Use the access token directly from the session
       const token = session.accessToken;
 
       if (!token) {
@@ -73,6 +77,9 @@ export default function MyPostsClient() {
     } catch (error) {
       console.error('Error fetching posts:', error);
       fetchedRef.current = false;
+      if (error.message === 'Your session has expired. Please sign in again.') {
+        router.push('/login');
+      }
     } finally {
       setLoading(false);
     }
@@ -109,6 +116,20 @@ export default function MyPostsClient() {
       }
     }
   };
+
+  useEffect(() => {
+    const loadMediaUrls = async () => {
+      const urls: {[key: number]: string} = {};
+      for (const post of posts) {
+        if (post.thumbnail_url) {
+          urls[post.id] = await getPrivateMediaUrl(post.thumbnail_url, 'image');
+        }
+      }
+      setMediaUrls(urls);
+    };
+
+    loadMediaUrls();
+  }, [posts]);
 
   if (loading) {
     return (
@@ -151,9 +172,9 @@ export default function MyPostsClient() {
             {posts.map((post) => (
               <TableRow key={post.id}>
                 <TableCell>
-                  {post.thumbnail_url && (
+                  {post.thumbnail_url && mediaUrls[post.id] && (
                     <Image 
-                      src={post.thumbnail_url} 
+                      src={mediaUrls[post.id]}
                       alt={post.title} 
                       width={100} 
                       height={56} 

@@ -4,6 +4,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { createClient } from '@supabase/supabase-js';
+import { getValidSession, getPrivateMediaUrl } from "@/lib/utils";
+import Image from 'next/image';
 
 interface Post {
   id: number;
@@ -24,48 +26,66 @@ export default function EditPost({ params }: { params: { id: string } }) {
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [thumbnailUrl, setThumbnailUrl] = useState('');
+  const [videoUrl, setVideoUrl] = useState('');
   const router = useRouter();
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
-    }
     const fetchPost = async () => {
-      if (!session?.accessToken) return;
+      try {
+        const session = await getValidSession();
+        if (!session?.accessToken) return;
 
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-          global: {
-            headers: {
-              Authorization: `Bearer ${session.accessToken}`,
+        const supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            global: {
+              headers: {
+                Authorization: `Bearer ${session.accessToken}`,
+              },
             },
-          },
+          }
+        );
+
+        const { data, error } = await supabase
+          .from('posts')
+          .select('*')
+          .eq('id', params.id)
+          .single();
+
+        if (error) {
+          setError('Failed to fetch post');
+          setLoading(false);
+          return;
         }
-      );
 
-      const { data, error } = await supabase
-        .from('posts')
-        .select('*')
-        .eq('id', params.id)
-        .single();
-
-      if (error) {
-        setError('Failed to fetch post');
+        setPost(data);
+        setTitle(data.title);
+        setDescription(data.description);
         setLoading(false);
-        return;
-      }
 
-      setPost(data);
-      setTitle(data.title);
-      setDescription(data.description);
-      setLoading(false);
+        if (data.thumbnail_url) {
+          const thumbnailData = await getPrivateMediaUrl(data.thumbnail_url, 'image');
+          setThumbnailUrl(thumbnailData.url);
+        }
+        if (data.video_url) {
+          const videoData = await getPrivateMediaUrl(data.video_url, 'video');
+          setVideoUrl(videoData.url);
+        }
+      } catch (error) {
+        if (error.message === 'Your session has expired. Please sign in again.') {
+          router.push('/login');
+        } else {
+          setError('Failed to fetch post');
+        }
+        setLoading(false);
+      }
     };
 
     fetchPost();
-  }, [params.id, session]);
+  }, [params.id, router]);
 
   const uploadFile = useCallback(async (file: File, bucket: string) => {
     if (!session?.accessToken || !session.user?.id) return null;
@@ -93,30 +113,26 @@ export default function EditPost({ params }: { params: { id: string } }) {
       throw error;
     }
 
-    const { data: urlData } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(fileName);
-
-    return urlData.publicUrl;
+    return fileName;
   }, [session]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!session?.accessToken || !session.user?.id) {
-      setError('No access token or user ID available');
-      return;
-    }
-
     try {
-      let thumbnailUrl = post?.thumbnail_url;
-      let videoUrl = post?.video_url;
+      const session = await getValidSession();
+      if (!session?.user?.id || !session?.accessToken) {
+        throw new Error('No user ID or access token available');
+      }
+
+      let thumbnailFileName = post?.thumbnail_url;
+      let videoFileName = post?.video_url;
 
       if (thumbnailFile) {
-        thumbnailUrl = await uploadFile(thumbnailFile, 'image');
+        thumbnailFileName = await uploadFile(thumbnailFile, 'image');
       }
 
       if (videoFile) {
-        videoUrl = await uploadFile(videoFile, 'video');
+        videoFileName = await uploadFile(videoFile, 'video');
       }
 
       const supabase = createClient(
@@ -134,8 +150,8 @@ export default function EditPost({ params }: { params: { id: string } }) {
       const updateData = {
         title,
         description,
-        thumbnail_url: thumbnailUrl,
-        video_url: videoUrl,
+        thumbnail_url: thumbnailFileName,
+        video_url: videoFileName,
         updated_at: new Date().toISOString(),
         user_id: session.user.id
       };
@@ -144,36 +160,12 @@ export default function EditPost({ params }: { params: { id: string } }) {
       console.log('Post ID:', params.id);
       console.log('User ID:', session.user.id);
 
-      // First, check if the post exists and belongs to the user
-      const { data: existingPost, error: fetchError } = await supabase
-        .from('posts')
-        .select()
-        .eq('id', params.id)
-        .eq('user_id', session.user.id)
-        .single();
-
-      console.log('Existing post:', existingPost);
-      console.log('Fetch error:', fetchError);
-
-      if (fetchError) {
-        console.error('Error fetching existing post:', fetchError);
-        throw new Error('Failed to fetch existing post');
-      }
-
-      if (!existingPost) {
-        throw new Error('Post not found or does not belong to the current user');
-      }
-
-      // If the post exists and belongs to the user, proceed with the update
       const { data, error } = await supabase
         .from('posts')
         .update(updateData)
         .eq('id', params.id)
-        .eq('user_id', session.user.id)  // Ensure we're updating the correct user's post
+        .eq('user_id', session.user.id)
         .select();
-
-      console.log('Update response:', data);
-      console.log('Update error:', error);
 
       if (error) {
         console.error('Supabase update error:', error);
@@ -183,13 +175,6 @@ export default function EditPost({ params }: { params: { id: string } }) {
       if (!data || data.length === 0) {
         throw new Error('No rows were updated');
       }
-
-      // Log the policies for the 'posts' table
-      const { data: policies, error: policiesError } = await supabase
-        .rpc('get_policies', { table_name: 'posts' });
-
-      console.log('Policies for posts table:', policies);
-      console.log('Policies error:', policiesError);
 
       router.push('/my-posts');
     } catch (error) {
@@ -202,7 +187,7 @@ export default function EditPost({ params }: { params: { id: string } }) {
     }
   };
 
-  // if (loading) return <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!post) return <div>Post not found</div>;
 
@@ -240,8 +225,15 @@ export default function EditPost({ params }: { params: { id: string } }) {
             onChange={(e) => setThumbnailFile(e.target.files?.[0] || null)}
             className="w-full p-2 border rounded"
           />
-          {post.thumbnail_url && (
-            <img src={post.thumbnail_url} alt="Current thumbnail" className="mt-2 w-32 h-32 object-cover" />
+          {post?.thumbnail_url && thumbnailUrl && (
+            <Image 
+              src={thumbnailUrl} 
+              alt="Current thumbnail" 
+              width={128} 
+              height={128} 
+              className="mt-2 object-cover" 
+              unoptimized
+            />
           )}
         </div>
         <div>
@@ -253,8 +245,8 @@ export default function EditPost({ params }: { params: { id: string } }) {
             onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
             className="w-full p-2 border rounded"
           />
-          {post.video_url && (
-            <video src={post.video_url} controls className="mt-2 w-full max-w-md" />
+          {post?.video_url && videoUrl && (
+            <video src={videoUrl} controls className="mt-2 w-full max-w-md" />
           )}
         </div>
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">

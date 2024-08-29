@@ -26,29 +26,55 @@ export const authOptions: NextAuthOptions = {
         }
 
         return {
-          ...data.user,
-          access_token: data.session?.access_token
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.user_metadata?.full_name,
+          access_token: data.session?.access_token,
+          refresh_token: data.session?.refresh_token,
         };
       }
     })
   ],
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.email = user.email;
-        // Include the Supabase access token in the JWT
-        token.accessToken = (user as any).access_token;
+        token.name = user.name;
+        token.accessToken = user.access_token;
+        token.refreshToken = user.refresh_token;
+        token.expiresAt = Math.floor(Date.now() / 1000 + 3600); // Set expiry to 1 hour from now
       }
-      return token;
+
+      // If the token is not expired, return it
+      if (Date.now() < token.expiresAt * 1000) {
+        return token;
+      }
+
+      // Token has expired, try to refresh it
+      try {
+        const { data, error } = await supabase.auth.refreshSession({
+          refresh_token: token.refreshToken,
+        });
+
+        if (error) throw error;
+
+        return {
+          ...token,
+          accessToken: data.session.access_token,
+          refreshToken: data.session.refresh_token,
+          expiresAt: Math.floor(Date.now() / 1000 + 3600), // Set new expiry
+        };
+      } catch (error) {
+        console.error('Error refreshing access token', error);
+        // If refresh fails, sign the user out on the client side
+        return { ...token, error: 'RefreshAccessTokenError' };
+      }
     },
     async session({ session, token }) {
-      if (token && session.user) {
-        session.user.id = token.id as string;
-        session.user.email = token.email as string;
-        // Pass the access token to the session
-        session.accessToken = token.accessToken as string;
-      }
+      session.user.id = token.id;
+      session.accessToken = token.accessToken;
+      session.error = token.error;
       return session;
     },
   },
