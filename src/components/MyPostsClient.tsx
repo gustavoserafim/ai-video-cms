@@ -2,20 +2,30 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { Session } from 'next-auth';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { getPrivateMediaUrl } from "@/lib/utils";
 import { getValidSession } from "@/lib/utils";
+import SupabaseImage from '../components/SupabaseImage'
 
 interface Post {
   id: number;
   title: string;
   thumbnail_url: string;
+}
+
+interface CustomSession extends Session {
+  user: {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
+  accessToken: string;
 }
 
 export default function MyPostsClient() {
@@ -24,7 +34,6 @@ export default function MyPostsClient() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const fetchedRef = useRef(false);
-  const [mediaUrls, setMediaUrls] = useState<{[key: number]: string}>({});
 
   const fetchPosts = useCallback(async () => {
     if (fetchedRef.current) {
@@ -35,7 +44,7 @@ export default function MyPostsClient() {
     setLoading(true);
 
     try {
-      const session = await getValidSession();
+      const session = await getValidSession() as CustomSession;
       if (!session?.user?.id) {
         throw new Error('No user ID found in session');
       }
@@ -77,7 +86,7 @@ export default function MyPostsClient() {
     } catch (error) {
       console.error('Error fetching posts:', error);
       fetchedRef.current = false;
-      if (error.message === 'Your session has expired. Please sign in again.') {
+      if (error instanceof Error && error.message === 'Your session has expired. Please sign in again.') {
         router.push('/login');
       }
     } finally {
@@ -116,20 +125,6 @@ export default function MyPostsClient() {
       }
     }
   };
-
-  useEffect(() => {
-    const loadMediaUrls = async () => {
-      const urls: {[key: number]: string} = {};
-      for (const post of posts) {
-        if (post.thumbnail_url) {
-          urls[post.id] = await getPrivateMediaUrl(post.thumbnail_url, 'image');
-        }
-      }
-      setMediaUrls(urls);
-    };
-
-    loadMediaUrls();
-  }, [posts]);
 
   if (loading) {
     return (
@@ -172,15 +167,14 @@ export default function MyPostsClient() {
             {posts.map((post) => (
               <TableRow key={post.id}>
                 <TableCell>
-                  {post.thumbnail_url && mediaUrls[post.id] && (
-                    <Image 
-                      src={mediaUrls[post.id]}
+                  {post.thumbnail_url && (
+                    <SupabaseImage
+                      imagePath={post.thumbnail_url}
                       alt={post.title} 
                       width={100} 
                       height={56} 
-                      className="rounded" 
-                      unoptimized
-                    />
+                      className="rounded"
+                  />
                   )}
                 </TableCell>
                 <TableCell className="font-medium">{post.title}</TableCell>

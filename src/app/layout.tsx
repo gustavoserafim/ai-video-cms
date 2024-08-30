@@ -5,7 +5,6 @@ import Link from "next/link";
 import NavLinks from "@/components/NavLinks";
 import { Providers } from "@/components/Providers";
 import dynamic from 'next/dynamic';
-import ErrorBoundary from "@/components/ErrorBoundary";
 import { getServerSession } from "next-auth/next";
 import { Session } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";

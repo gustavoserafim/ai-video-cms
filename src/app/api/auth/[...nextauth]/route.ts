@@ -1,6 +1,11 @@
-import NextAuth, { NextAuthOptions } from 'next-auth';
+import NextAuth, { User, NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { supabase } from '@/lib/supabase';
+
+interface ExtendedUser extends User {
+  access_token?: string;
+  refresh_token?: string;
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -38,31 +43,32 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
-        token.accessToken = user.access_token;
-        token.refreshToken = user.refresh_token;
+        const extendedUser = user as ExtendedUser;
+        token.id = extendedUser.id;
+        token.email = extendedUser.email;
+        token.name = extendedUser.name;
+        token.accessToken = extendedUser.access_token;
+        token.refreshToken = extendedUser.refresh_token;
         token.expiresAt = Math.floor(Date.now() / 1000 + 3600); // Set expiry to 1 hour from now
       }
 
       // If the token is not expired, return it
-      if (Date.now() < token.expiresAt * 1000) {
+      if (typeof token.expiresAt === 'number' && Date.now() < token.expiresAt * 1000) {
         return token;
       }
 
       // Token has expired, try to refresh it
       try {
         const { data, error } = await supabase.auth.refreshSession({
-          refresh_token: token.refreshToken,
+          refresh_token: token.refreshToken as string,
         });
 
         if (error) throw error;
 
         return {
           ...token,
-          accessToken: data.session.access_token,
-          refreshToken: data.session.refresh_token,
+          accessToken: data.session?.access_token,
+          refreshToken: data.session?.refresh_token,
           expiresAt: Math.floor(Date.now() / 1000 + 3600), // Set new expiry
         };
       } catch (error) {
@@ -72,10 +78,15 @@ export const authOptions: NextAuthOptions = {
       }
     },
     async session({ session, token }) {
-      session.user.id = token.id;
-      session.accessToken = token.accessToken;
-      session.error = token.error;
-      return session;
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id,
+        },
+        accessToken: token.accessToken,
+        error: token.error,
+      };
     },
   },
   pages: {

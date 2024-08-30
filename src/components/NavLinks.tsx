@@ -15,7 +15,7 @@ export default function NavLinks() {
     setIsClient(true);
   }, []);
 
-  const getLinkVariant = (path: string) => {
+  const getLinkVariant = (path: string): "transparent" | "transparent" => {
     return pathname === path ? "transparent" : "transparent";
   };
 
@@ -40,7 +40,7 @@ export default function NavLinks() {
           <Button asChild variant={getLinkVariant('/my-posts')} className="text-zinc-100 hover:text-violet-400">
             <Link href="/my-posts">My Posts</Link>
           </Button>
-          <Button asChild variant="ghost" className="text-zinc-100 hover:text-violet-400">
+          <Button asChild variant="transparent" className="text-zinc-100 hover:text-violet-400">
             <Link href="/api/auth/signout">Logout</Link>
           </Button>
         </>
