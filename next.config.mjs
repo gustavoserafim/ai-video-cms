@@ -1,7 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['img-dev.fanherocdn.com', 'luwurfwcmfjxayzivkgc.supabase.co'],
+    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'img-dev.fanherocdn.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'luwurfwcmfjxayzivkgc.supabase.co',
+      },
+    ],
   },
 };
 
